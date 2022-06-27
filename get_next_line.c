@@ -15,6 +15,14 @@
 #define NUM_OF_FD 256
 //hanger[fd]にfdのcursorを入れていく。
 
+void    free_all(char *line, char *store)
+{
+    if (!store)
+        free(store);
+    if (!line)
+        free(line);
+}
+
 char    *read_and_store(int fd)
 {
     char    *line;
@@ -29,7 +37,10 @@ char    *read_and_store(int fd)
         printf("prestore: %s\n", store);
         line = strcjoin(line, store, '\n');
         if (!line)
+        {
+            free_all(line, store);
             return (NULL);
+        }
     }
     read_size = BUFFER_SIZE;
     while ((read_size == BUFFER_SIZE) && !ft_strchr(line, '\n'))
@@ -40,7 +51,10 @@ char    *read_and_store(int fd)
         line = strcjoin(line, tmp, '\n');
         printf("line : %s\n", line);
         if (!line)
+        {
+            free_all(line, store);
             return (NULL);
+        }
     }
     printf("tmp[0] : %c\n", tmp[0]);
     if (read_size < BUFFER_SIZE && !ft_strchr(line, '\n'))
@@ -57,7 +71,10 @@ char    *read_and_store(int fd)
     }
     printf("store : %s\n", store);
     if (!store && !line)
+    {
+        free_all(line, store);
         return (NULL);
+    }
     return (line);
 }
 
