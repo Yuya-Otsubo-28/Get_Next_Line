@@ -6,7 +6,7 @@
 /*   By: yotsubo <y.otsubo.886@ms.saitama-u.ac.j    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 13:09:31 by yotsubo           #+#    #+#             */
-/*   Updated: 2022/06/26 13:09:31 by yotsubo          ###   ########.fr       */
+/*   Updated: 2022/06/27 12:50:57 by yotsubo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ size_t	strclen(const char *str, char c)
 	return (size);
 }
 
-char	*strcjoin(char const *s1, char const *s2, char c)
+char	*strcjoin(char *s1, char const *s2, char c)
 {
 	char	*s12;
 	size_t	total_size;
@@ -56,8 +56,11 @@ char	*strcjoin(char const *s1, char const *s2, char c)
 	s12 = (char *)malloc(sizeof (char) * total_size);
 	if (!s12)
         return (NULL);
-    while (s1 && *s1 != '\0')
-	    s12[i++] = *(s1++);
+    while (s1 && s1[i] != '\0')
+	{
+	    s12[i] = s1[i];
+		i++;
+	}
     while (s2 && *s2 != '\0')
 	{
 		s12[i++] = *s2;
@@ -66,6 +69,7 @@ char	*strcjoin(char const *s1, char const *s2, char c)
 		s2++;
 	}
 	s12[i] = '\0';
+	free(s1);
 	return (s12);
 }
 

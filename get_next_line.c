@@ -6,14 +6,16 @@
 /*   By: yotsubo <y.otsubo.886@ms.saitama-u.ac.j    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 12:36:08 by yotsubo           #+#    #+#             */
-/*   Updated: 2022/06/26 12:36:08 by yotsubo          ###   ########.fr       */
+/*   Updated: 2022/06/27 13:12:40 by yotsubo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"get_next_line.h"
 
 #define NUM_OF_FD 256
-//hanger[fd]にfdのcursorを入れていく。
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 10
+#endif
 
 void    free_all(char *line, char *store)
 {
@@ -34,8 +36,8 @@ char    *read_and_store(int fd)
     ft_memset(tmp, '\0', BUFFER_SIZE);
     if (store != NULL)
     {
-        printf("prestore: %s\n", store);
         line = strcjoin(line, store, '\n');
+		free(store);
         if (!line)
         {
             free_all(line, store);
@@ -46,30 +48,31 @@ char    *read_and_store(int fd)
     while ((read_size == BUFFER_SIZE) && !ft_strchr(line, '\n'))
     {
         read_size = read(fd, tmp, BUFFER_SIZE);
+		if (read_size == -1)
+		{
+			free_all(line, store);
+			return (NULL);
+		}
+		if (read_size == 0 && !line)
+			return (NULL);
         tmp[read_size] = '\0';
-        printf("tmp : %s\n", tmp);
         line = strcjoin(line, tmp, '\n');
-        printf("line : %s\n", line);
         if (!line)
         {
             free_all(line, store);
             return (NULL);
         }
     }
-    printf("tmp[0] : %c\n", tmp[0]);
     if (read_size < BUFFER_SIZE && !ft_strchr(line, '\n'))
         store = NULL;
     else if (tmp[0] && ft_strchr(tmp, '\n'))
     {
-        printf("hello\n");
         store = ft_strdup(ft_strchr(tmp, '\n') + 1);
     }
     else if (read_size > 0)
     {
-        printf("store : %s\n", store);
         store = ft_strdup(ft_strchr(store, '\n') + 1);
     }
-    printf("store : %s\n", store);
     if (!store && !line)
     {
         free_all(line, store);
@@ -89,7 +92,7 @@ char *get_next_line(int fd)
         return (NULL);
     return (res);
 }
-
+/*
 int main(void)
 {
     char    *res;
@@ -128,3 +131,4 @@ int main(void)
     printf("--------------------\n");
     return (0);
 }
+*/

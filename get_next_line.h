@@ -10,7 +10,7 @@ char	*ft_strdup(const char *s1);
 
 size_t	strclen(const char *str, char c);
 
-char	*strcjoin(char const *s1, char const *s2, char c);
+char	*strcjoin(char *s1, char const *s2, char c);
 
 char	*ft_strchr(const char *s, int	c);
 
