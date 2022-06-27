@@ -1,50 +1,113 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yotsubo <y.otsubo.886@ms.saitama-u.ac.j    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/06/26 12:36:08 by yotsubo           #+#    #+#             */
+/*   Updated: 2022/06/26 12:36:08 by yotsubo          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include"get_next_line.h"
 
-#define BUFFER_SIZE
+#define NUM_OF_FD 256
 //hanger[fd]にfdのcursorを入れていく。
 
-void    read_and_store(int fd, char **hanger)
+char    *read_and_store(int fd)
 {
-    size_t read_size;
-    int end_of_line;
-    char *tmp;
-    char *line;
+    char    *line;
+    static char    *store;
+    char    tmp[BUFFER_SIZE + 1];
+    ssize_t read_size;
 
     line = NULL;
-    line = ft_strjoin
+    ft_memset(tmp, '\0', BUFFER_SIZE);
+    if (store != NULL)
+    {
+        printf("prestore: %s\n", store);
+        line = strcjoin(line, store, '\n');
+        if (!line)
+            return (NULL);
+    }
     read_size = BUFFER_SIZE;
-    tmp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-    if (!tmp)
-        return (NULL);
     while ((read_size == BUFFER_SIZE) && !ft_strchr(line, '\n'))
     {
         read_size = read(fd, tmp, BUFFER_SIZE);
-        tmp[BUFFER_SIZE] = '\0';
-        line = ft_strjoin_modified(line, tmp);
+        tmp[read_size] = '\0';
+        printf("tmp : %s\n", tmp);
+        line = strcjoin(line, tmp, '\n');
+        printf("line : %s\n", line);
+        if (!line)
+            return (NULL);
     }
-    if (!line)
+    printf("tmp[0] : %c\n", tmp[0]);
+    if (read_size < BUFFER_SIZE && !ft_strchr(line, '\n'))
+        store = NULL;
+    else if (tmp[0] && ft_strchr(tmp, '\n'))
+    {
+        printf("hello\n");
+        store = ft_strdup(ft_strchr(tmp, '\n') + 1);
+    }
+    else if (read_size > 0)
+    {
+        printf("store : %s\n", store);
+        store = ft_strdup(ft_strchr(store, '\n') + 1);
+    }
+    printf("store : %s\n", store);
+    if (!store && !line)
         return (NULL);
-    end_of_line = c_to_c_count(line, '\n');
-    line[end_of_line] = '\0';
-    hanger[fd] = ft_strjoin_modified(hanger[fd], tmp);
     return (line);
 }
 
 char *get_next_line(int fd)
 {
-    static char **hanger;
     char    *res;
-    int num_of_fd;
 
-    if (fd < 0 || fd > num_of_fd || BUFFER_SIZE < 0)
+    if (fd < 0 || fd > NUM_OF_FD || BUFFER_SIZE <= 0)
         return (NULL);
-    hanger = (char **)malloc(sizeof(char *) * num_of_fd);
-    if (!hanger)
-        return (NULL);
-    res = read_and_store(fd, hanger);
+    res = read_and_store(fd);
     if (!res)
         return (NULL);
-    res[ft_strlen(res) + 1] = '\0';
-    res[ft_strlen(res) - 1] = '\n';
     return (res);
+}
+
+int main(void)
+{
+    char    *res;
+    ssize_t fd;
+
+    fd = open("test.txt", O_RDONLY);
+    res = get_next_line(fd);
+    printf("res1 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res2 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res3 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res4 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res5 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res6 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res7 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res8 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res9 : %s\n", res);
+    printf("--------------------\n");
+    res = get_next_line(fd);
+    printf("res10 : %s\n", res);
+    printf("--------------------\n");
+    return (0);
 }
